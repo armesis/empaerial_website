@@ -128,56 +128,100 @@
   },
 
   "projects": {
-  "title": "Our Projects",
-  "subtitle": "Here we showcase the drones we are building and those completed, including images, specs, and BOM.",
-  "comingSoon": "Coming Soon",
-  "viewDetails": "View Details",
-  "bom": "BOM",
-  "vespasian": {
-    "summary": "Lightweight quadcopter prototype for stable flight and durability.",
-    "description": "Vespasian is a lightweight quadcopter prototype featuring carbon fiber arms and 3D printed PLA body components, designed for stability, modularity, and precision performance.",
+    "title": "Our Projects",
+    "subtitle": "Here we showcase the drones we are building and those completed, including images, specs, and BOM.",
+    "comingSoon": "Coming Soon",
+    "viewDetails": "View Details",
+    "bom": "BOM",
+    "vespasian": {
+      "summary": "Lightweight quadcopter prototype for stable flight and durability.",
+      "description": "Vespasian is a lightweight quadcopter prototype featuring carbon fiber arms and 3D printed PLA body components, designed for stability, modularity, and precision performance.",
       "specs": {
-      "weight": "Weight",
-      "max_takeoff": "Max takeoff weight",
-      "flight_duration": "Flight duration (no load)",
-      "frame_length": "Frame length",
-      "height": "Height",
-      "motors": "Motors",
-      "firmware": "Firmware"
+        "weight": "Weight",
+        "max_takeoff": "Max takeoff weight",
+        "flight_duration": "Flight duration (no load)",
+        "frame_length": "Frame length",
+        "height": "Height",
+        "motors": "Motors",
+        "firmware": "Firmware"
+      },
+      "bom": {
+        "arms": "Arms",
+        "motor_mounts": "Motor mounts",
+        "arm_to_chassis": "Arm to Chassis connection",
+        "chassis": "Chassis",
+        "escs": "ESCs",
+        "motors": "Motors",
+        "battery": "Battery",
+        "props": "Props",
+        "controller": "Flight Controller",
+        "firmware": "Firmware"
+      }
     },
-    "bom": {
-      "arms": "Arms",
-      "motor_mounts": "Motor mounts",
-      "arm_to_chassis": "Arm to Chassis connection",
-      "chassis": "Chassis",
-      "escs": "ESCs",
-      "motors": "Motors",
-      "battery": "Battery",
-      "props": "Props",
-      "controller": "Flight Controller",
-      "firmware": "Firmware"
+    "drone2": { "summary": "Coming Soon" },
+    "drone3": { "summary": "Coming Soon" },
+    "drone4": { "summary": "Coming Soon" }
+  },
+  "vespasian": {
+    "subtitle": "A modular, lightweight quadcopter engineered for precision and endurance.",
+    "specifications": "Specifications",
+    "specs": {
+      "weight": "Weight",
+      "max_takeoff": "Max Takeoff Weight",
+      "flight_duration": "Flight Duration",
+      "frame_length": "Frame Length",
+      "height": "Height"
+    },
+    "materials": "Materials",
+    "about": "About the Project",
+    "about_text": "Details on this project will be uploaded soon.",
+    "contact_title": "Interested in Vespasian?",
+    "contact_text": "For collaborations, sponsorships, or limited-batch availability, reach out to us.",
+    "email_us": "Email Us",
+    "contact_section": "Contact Section →"
+  },
+  "project_detail": {
+    "back": "Back to Projects",
+    "dossier": "Project Dossier",
+    "hero_eyebrow": "Atmospheric Briefing",
+    "route_eyebrow": "Dossier Route",
+    "loading": "Loading project...",
+    "not_found": "Project not found.",
+    "hero_placeholder": "Curated opening media pending.",
+    "autoplay_fallback": "Autoplay was blocked. Playback controls remain available.",
+    "gallery_empty": "Visual dossier pending.",
+    "specs_empty": "Telemetry pending.",
+    "materials_empty": "Material register pending.",
+    "text_empty": "Narrative notes pending.",
+    "videos_empty": "Video dossier pending.",
+    "callouts_empty": "Annotation pass pending.",
+    "interval_empty": "Transition media pending.",
+    "contact_title_template": "Interested in {{project}}?",
+    "contact_fallback_project": "this project",
+    "contact_text": "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.",
+    "email_us": "Email Us",
+    "contact_section": "Contact Section",
+    "interval_label": "Interval",
+    "meta_labels": {
+      "status": "Status",
+      "year": "Year",
+      "purpose": "Purpose"
+    },
+    "status_labels": {
+      "active": "Active",
+      "work in progress": "Work in Progress",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "section_labels": {
+      "specs": "Specifications",
+      "materials": "Materials",
+      "gallery": "Gallery",
+      "callouts": "Callouts",
+      "videos": "Videos",
+      "text": "Overview",
+      "media-interval": "Transition",
+      "contact": "Contact"
     }
-  },
-  "drone2": { "summary": "Coming Soon" },
-  "drone3": { "summary": "Coming Soon" },
-  "drone4": { "summary": "Coming Soon" }
-},
-"vespasian": {
-  "subtitle": "A modular, lightweight quadcopter engineered for precision and endurance.",
-  "specifications": "Specifications",
-  "specs": {
-    "weight": "Weight",
-    "max_takeoff": "Max Takeoff Weight",
-    "flight_duration": "Flight Duration",
-    "frame_length": "Frame Length",
-    "height": "Height"
-  },
-  "materials": "Materials",
-  "about": "About the Project",
-  "about_text": "Details on this project will be uploaded soon.",
-  "contact_title": "Interested in Vespasian?",
-  "contact_text": "For collaborations, sponsorships, or limited-batch availability, reach out to us.",
-  "email_us": "Email Us",
-  "contact_section": "Contact Section →"
-}
+  }
 }
