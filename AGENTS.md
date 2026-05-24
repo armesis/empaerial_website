@@ -42,8 +42,9 @@
 
 Issue implementation flow:
 
-1. Always switch to `master`.
-2. Pull from `master` to sync your local copy.
+1. Always switch to `main` or `master`, depending on which branch exists in the repo.
+2. Pull from `main` or `master` to sync your local copy.
 3. Implement the issue.
 4. Open a PR after implementation.
-5. Merge the PR, then switch back to `master` and pull again to re-sync.
+5. Merge the PR.
+6. Switch back to `main` or `master` and pull again to re-sync.
