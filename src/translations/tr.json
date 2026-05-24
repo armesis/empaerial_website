@@ -29,8 +29,6 @@
   "contact_number_label": "veya şu numaradan bizimle iletişime geçebilirsiniz:",
   "contact_number": "+90 531 496 69 47",
 
-
-
   "footer_follow": "Bizi sosyal medyada takip edin",
   "footer_instagram": "Instagram()",
   "footer_linkedin": "LinkedIn()",
@@ -130,54 +128,98 @@
   },
 
   "projects": {
-  "title": "Projelerimiz",
-  "subtitle": "Yapmakta olduğumuz ve tamamladığımız insansız hava araçlarını görselleri, özellikleri ve malzeme listeleriyle birlikte burada sergiliyoruz.",
-  "comingSoon": "Yakında geliyor",
-  "viewDetails": "Detayları Görüntüle",
-  "bom": "Malzeme Listesi",
+    "title": "Projelerimiz",
+    "subtitle": "Yapmakta olduğumuz ve tamamladığımız insansız hava araçlarını görselleri, özellikleri ve malzeme listeleriyle birlikte burada sergiliyoruz.",
+    "comingSoon": "Yakında geliyor",
+    "viewDetails": "Detayları Görüntüle",
+    "bom": "Malzeme Listesi",
+    "vespasian": {
+      "summary": "Hafif, dengeli uçuş ve dayanıklılık için tasarlanmış dört pervaneli prototip.",
+      "description": "Vespasian, karbon fiber kollar ve 3D baskılı PLA gövde bileşenleriyle tasarlanmış, stabilite, modülerlik ve hassas performans sağlayan hafif bir dört pervaneli prototiptir.",
+      "specs": {
+        "weight": "Ağırlık",
+        "max_takeoff": "Azami kalkış ağırlığı",
+        "flight_duration": "Uçuş süresi (yük olmadan)",
+        "frame_length": "Gövde uzunluğu",
+        "height": "Yükseklik"
+      },
+      "bom": {
+        "arms": "Kollar",
+        "motor_mounts": "Motor yuvaları",
+        "arm_to_chassis": "Kol-Gövde bağlantısı",
+        "chassis": "Gövde",
+        "escs": "ESC'ler",
+        "motors": "Motorlar",
+        "battery": "Batarya",
+        "props": "Pervaneler",
+        "controller": "Uçuş kontrolcüsü",
+        "firmware": "Yazılım"
+      }
+    },
+    "drone2": { "summary": "Yakında geliyor" },
+    "drone3": { "summary": "Yakında geliyor" },
+    "drone4": { "summary": "Yakında geliyor" }
+  },
   "vespasian": {
-    "summary": "Hafif, dengeli uçuş ve dayanıklılık için tasarlanmış dört pervaneli prototip.",
-    "description": "Vespasian, karbon fiber kollar ve 3D baskılı PLA gövde bileşenleriyle tasarlanmış, stabilite, modülerlik ve hassas performans sağlayan hafif bir dört pervaneli prototiptir.",
+    "subtitle": "Hassasiyet ve dayanıklılık için tasarlanmış modüler, hafif bir dört pervaneli hava aracı.",
+    "specifications": "Teknik Özellikler",
     "specs": {
       "weight": "Ağırlık",
-      "max_takeoff": "Azami kalkış ağırlığı",
-      "flight_duration": "Uçuş süresi (yük olmadan)",
-      "frame_length": "Gövde uzunluğu",
+      "max_takeoff": "Azami Kalkış Ağırlığı",
+      "flight_duration": "Uçuş Süresi",
+      "frame_length": "Gövde Uzunluğu",
       "height": "Yükseklik"
     },
-    "bom": {
-      "arms": "Kollar",
-      "motor_mounts": "Motor yuvaları",
-      "arm_to_chassis": "Kol-Gövde bağlantısı",
-      "chassis": "Gövde",
-      "escs": "ESC'ler",
-      "motors": "Motorlar",
-      "battery": "Batarya",
-      "props": "Pervaneler",
-      "controller": "Uçuş kontrolcüsü",
-      "firmware": "Yazılım"
+    "materials": "Malzemeler",
+    "about": "Proje Hakkında",
+    "about_text": "Bu projeye ilişkin detaylar yakında yüklenecektir.",
+    "contact_title": "Vespasian ile ilgileniyor musunuz?",
+    "contact_text": "İş birlikleri, sponsorluklar veya sınırlı üretim için bizimle iletişime geçin.",
+    "email_us": "Bize E-posta Gönderin",
+    "contact_section": "İletişim Bölümü →"
+  },
+  "project_detail": {
+    "back": "Projelere Dön",
+    "dossier": "Proje Dosyası",
+    "hero_eyebrow": "Atmosferik Brifing",
+    "route_eyebrow": "Dosya Rotası",
+    "loading": "Proje yükleniyor...",
+    "not_found": "Proje bulunamadı.",
+    "hero_placeholder": "Kurgulanmış açılış medyası bekleniyor.",
+    "autoplay_fallback": "Otomatik oynatma engellendi. Oynatma kontrolleri kullanılabilir.",
+    "gallery_empty": "Görsel dosya yakında eklenecek.",
+    "specs_empty": "Teknik telemetri bekleniyor.",
+    "materials_empty": "Malzeme kaydı bekleniyor.",
+    "text_empty": "Anlatım notları yakında eklenecek.",
+    "videos_empty": "Video belgeleri yakında eklenecek.",
+    "callouts_empty": "Açıklama noktalarının işlenmesi sürüyor.",
+    "interval_empty": "Geçiş medyası bekleniyor.",
+    "contact_title_template": "{{project}} ile ilgileniyor musunuz?",
+    "contact_fallback_project": "Bu proje",
+    "contact_text": "İş birlikleri, sponsorluklar veya proje detayları için bizimle iletişime geçin.",
+    "email_us": "E-Posta Gönder",
+    "contact_section": "İletişim Bölümü",
+    "interval_label": "Geçiş",
+    "meta_labels": {
+      "status": "Durum",
+      "year": "Yıl",
+      "purpose": "Amaç"
+    },
+    "status_labels": {
+      "active": "Aktif",
+      "work in progress": "Devam Ediyor",
+      "completed": "Tamamlandı",
+      "archived": "Arşivlendi"
+    },
+    "section_labels": {
+      "specs": "Özellikler",
+      "materials": "Malzemeler",
+      "gallery": "Galeri",
+      "callouts": "Açıklamalar",
+      "videos": "Videolar",
+      "text": "Genel Bakış",
+      "media-interval": "Geçiş",
+      "contact": "İletişim"
     }
-  },
-  "drone2": { "summary": "Yakında geliyor" },
-  "drone3": { "summary": "Yakında geliyor" },
-  "drone4": { "summary": "Yakında geliyor" }
-},
-"vespasian": {
-  "subtitle": "Hassasiyet ve dayanıklılık için tasarlanmış modüler, hafif bir dört pervaneli hava aracı.",
-  "specifications": "Teknik Özellikler",
-  "specs": {
-    "weight": "Ağırlık",
-    "max_takeoff": "Azami Kalkış Ağırlığı",
-    "flight_duration": "Uçuş Süresi",
-    "frame_length": "Gövde Uzunluğu",
-    "height": "Yükseklik"
-  },
-  "materials": "Malzemeler",
-  "about": "Proje Hakkında",
-  "about_text": "Bu projeye ilişkin detaylar yakında yüklenecektir.",
-  "contact_title": "Vespasian ile ilgileniyor musunuz?",
-  "contact_text": "İş birlikleri, sponsorluklar veya sınırlı üretim için bizimle iletişime geçin.",
-  "email_us": "Bize E-posta Gönderin",
-  "contact_section": "İletişim Bölümü →"
-}
+  }
 }

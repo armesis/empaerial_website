@@ -10,30 +10,9 @@ import en from "@/translations/en.json";
 import tr from "@/translations/tr.json";
 import styles from "./ProjectDetail.module.css";
 
-const STATUS_TRANSLATIONS = {
-  en: {
-    active: "Active",
-    "work in progress": "Work in Progress",
-    completed: "Completed",
-    archived: "Archived",
-  },
-  tr: {
-    active: "Aktif",
-    "work in progress": "Devam Ediyor",
-    completed: "Tamamlandi",
-    archived: "Arsivlendi",
-  },
-};
-
-const SECTION_LABELS = {
-  specs: { en: "Specifications", tr: "Ozellikler" },
-  materials: { en: "Materials", tr: "Malzemeler" },
-  gallery: { en: "Gallery", tr: "Galeri" },
-  callouts: { en: "Callouts", tr: "Aciklamalar" },
-  videos: { en: "Videos", tr: "Videolar" },
-  text: { en: "Overview", tr: "Genel Bakis" },
-  "media-interval": { en: "Transition", tr: "Gecis" },
-  contact: { en: "Contact", tr: "Iletisim" },
+const PROJECT_CONTACT_FALLBACK = {
+  email: "empaerial.uav@gmail.com",
+  link: "/#contact",
 };
 
 function slugify(value) {
@@ -43,23 +22,32 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function hasMeaningfulText(value) {
+  return typeof value === "string" ? value.trim().length > 0 : false;
+}
+
+function getMeaningfulText(value, fallback = "") {
+  return hasMeaningfulText(value) ? value.trim() : fallback;
+}
+
 function normalizeRows(section) {
   if (Array.isArray(section?.data?.rows)) {
     return section.data.rows
       .map((row) => ({
-        key: row?.key || "-",
-        value: row?.value || "-",
+        key: getMeaningfulText(row?.key),
+        value: getMeaningfulText(row?.value),
       }))
       .filter((row) => row.key || row.value);
   }
 
   if (section?.data && typeof section.data === "object") {
     return Object.entries(section.data)
+      .filter(([, value]) => hasMeaningfulText(value))
       .map(([key, value]) => ({
         key: key.replaceAll("_", " "),
-        value: value || "-",
+        value: value.trim(),
       }))
-      .filter((row) => row.key || row.value);
+      .filter((row) => row.key && row.value);
   }
 
   return [];
@@ -96,82 +84,64 @@ function getYouTubeEmbedUrl(url) {
   return url;
 }
 
-function getSectionLabel(type, lang) {
-  return SECTION_LABELS[type]?.[lang] || SECTION_LABELS[type]?.en || "Section";
+function getProjectDetailDictionary(t) {
+  return t.project_detail || {};
 }
 
-function getSectionHeading(section, lang) {
+function getStatusLabel(status, detailT) {
+  return detailT?.status_labels?.[status] || status;
+}
+
+function getSectionLabel(type, detailT) {
+  return detailT?.section_labels?.[type] || "Section";
+}
+
+function getSectionHeading(section, detailT) {
   if (section?.type === "text" && section?.data?.heading) {
     return section.data.heading;
   }
 
-  return getSectionLabel(section?.type, lang);
+  return getSectionLabel(section?.type, detailT);
 }
 
-function getSectionNavLabel(section, lang) {
-  return section?.navLabel?.trim() || getSectionLabel(section?.type, lang);
+function getSectionNavLabel(section, detailT) {
+  return section?.navLabel?.trim() || getSectionLabel(section?.type, detailT);
 }
 
-function getProjectDetailCopy(lang, projectName) {
-  const statusLabels = STATUS_TRANSLATIONS[lang] || STATUS_TRANSLATIONS.en;
-
+function getProjectDetailCopy(detailT) {
   return {
-    back: lang === "tr" ? "Projelere Don" : "Back to Projects",
-    dossier: lang === "tr" ? "Proje Dosyasi" : "Project Dossier",
-    heroEyebrow: lang === "tr" ? "Atmosferik Brifing" : "Atmospheric Briefing",
-    routeEyebrow: lang === "tr" ? "Dossier Route" : "Dossier Route",
-    loading: lang === "tr" ? "Proje yukleniyor..." : "Loading project...",
-    notFound: lang === "tr" ? "Proje bulunamadi." : "Project not found.",
+    back: detailT?.back || "Back to Projects",
+    dossier: detailT?.dossier || "Project Dossier",
+    heroEyebrow: detailT?.hero_eyebrow || "Atmospheric Briefing",
+    routeEyebrow: detailT?.route_eyebrow || "Dossier Route",
+    loading: detailT?.loading || "Loading project...",
+    notFound: detailT?.not_found || "Project not found.",
     heroPlaceholder:
-      lang === "tr"
-        ? "Kurgulanmis acilis medyasi bekleniyor."
-        : "Curated opening media pending.",
+      detailT?.hero_placeholder || "Curated opening media pending.",
     autoplayFallback:
-      lang === "tr"
-        ? "Otomatik oynatma engellendi. Oynatma kontrolleri kullanilabilir."
-        : "Autoplay was blocked. Playback controls remain available.",
-    galleryEmpty:
-      lang === "tr"
-        ? "Gorsel dosya yakinda eklenecek."
-        : "Visual dossier pending.",
-    specsEmpty:
-      lang === "tr" ? "Teknik telemetri bekleniyor." : "Telemetry pending.",
-    materialsEmpty:
-      lang === "tr"
-        ? "Malzeme kaydi bekleniyor."
-        : "Material register pending.",
-    textEmpty:
-      lang === "tr"
-        ? "Anlatim notlari yakinda eklenecek."
-        : "Narrative notes pending.",
-    videosEmpty:
-      lang === "tr"
-        ? "Video belgeleri yakinda eklenecek."
-        : "Video dossier pending.",
-    calloutsEmpty:
-      lang === "tr"
-        ? "Aciklama noktalarinin islenmesi suruyor."
-        : "Annotation pass pending.",
-    intervalEmpty:
-      lang === "tr" ? "Gecis medyasi bekleniyor." : "Transition media pending.",
-    contactTitle:
-      lang === "tr"
-        ? `${projectName || "Bu proje"} ile ilgileniyor musunuz?`
-        : `Interested in ${projectName || "this project"}?`,
+      detailT?.autoplay_fallback ||
+      "Autoplay was blocked. Playback controls remain available.",
+    galleryEmpty: detailT?.gallery_empty || "Visual dossier pending.",
+    specsEmpty: detailT?.specs_empty || "Telemetry pending.",
+    materialsEmpty: detailT?.materials_empty || "Material register pending.",
+    textEmpty: detailT?.text_empty || "Narrative notes pending.",
+    videosEmpty: detailT?.videos_empty || "Video dossier pending.",
+    calloutsEmpty: detailT?.callouts_empty || "Annotation pass pending.",
+    intervalEmpty: detailT?.interval_empty || "Transition media pending.",
+    contactTitleTemplate:
+      detailT?.contact_title_template || "Interested in {{project}}?",
+    contactFallbackProject: detailT?.contact_fallback_project || "this project",
     contactText:
-      lang === "tr"
-        ? "Is birlikleri, sponsorluklar veya proje detaylari icin bizimle iletisime gecin."
-        : "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.",
-    reachOut: lang === "tr" ? "Iletisime Gec" : "Reach Out",
-    emailUs: lang === "tr" ? "E-Posta Gonder" : "Email Us",
-    contactSection: lang === "tr" ? "Iletisim Bolumu" : "Contact Section",
-    intervalLabel: lang === "tr" ? "Gecis" : "Interval",
+      detailT?.contact_text ||
+      "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.",
+    emailUs: detailT?.email_us || "Email Us",
+    contactSection: detailT?.contact_section || "Contact Section",
+    intervalLabel: detailT?.interval_label || "Interval",
     metaLabels: {
-      status: lang === "tr" ? "Durum" : "Status",
-      year: lang === "tr" ? "Yil" : "Year",
-      purpose: lang === "tr" ? "Amac" : "Purpose",
+      status: detailT?.meta_labels?.status || "Status",
+      year: detailT?.meta_labels?.year || "Year",
+      purpose: detailT?.meta_labels?.purpose || "Purpose",
     },
-    statusLabels,
   };
 }
 
@@ -262,6 +232,7 @@ export default function ProjectDetails() {
   const [lang, setLang] = useState("en");
   const [activeSection, setActiveSection] = useState("");
   const t = lang === "tr" ? tr : en;
+  const detailT = useMemo(() => getProjectDetailDictionary(t), [t]);
   const { projects, loading } = useProjects();
 
   useEffect(() => {
@@ -285,15 +256,14 @@ export default function ProjectDetails() {
   const contactSection = useMemo(
     () =>
       Array.isArray(project?.sections)
-        ? project.sections.find((section) => section.type === "contact")
+        ? [...project.sections]
+            .reverse()
+            .find((section) => section.type === "contact")
         : null,
     [project?.sections]
   );
 
-  const copy = useMemo(
-    () => getProjectDetailCopy(lang, project?.name),
-    [lang, project?.name]
-  );
+  const copy = useMemo(() => getProjectDetailCopy(detailT), [detailT]);
 
   const heroMedia = project?.hero_media;
   const heroAlt = heroMedia?.alt || project?.name || "Project hero";
@@ -306,9 +276,7 @@ export default function ProjectDetails() {
     () => [
       {
         label: copy.metaLabels.status,
-        value: project?.status
-          ? copy.statusLabels[project.status] || project.status
-          : "-",
+        value: project?.status ? getStatusLabel(project.status, detailT) : "-",
       },
       {
         label: copy.metaLabels.year,
@@ -319,24 +287,18 @@ export default function ProjectDetails() {
         value: project?.purpose || "-",
       },
     ],
-    [
-      copy.metaLabels,
-      copy.statusLabels,
-      project?.purpose,
-      project?.status,
-      project?.year,
-    ]
+    [copy.metaLabels, detailT, project?.purpose, project?.status, project?.year]
   );
 
   const railItems = useMemo(() => {
     const dynamicItems = sections.map((section, index) => {
-      const label = getSectionNavLabel(section, lang);
+      const label = getSectionNavLabel(section, detailT);
       return {
         id: `section-${index + 1}-${slugify(label || section.type)}`,
         index,
         label,
         type: section.type,
-        heading: getSectionHeading(section, lang),
+        heading: getSectionHeading(section, detailT),
         section,
       };
     });
@@ -346,13 +308,13 @@ export default function ProjectDetails() {
       {
         id: "project-contact",
         index: dynamicItems.length,
-        label: contactSection?.navLabel || getSectionLabel("contact", lang),
+        label: contactSection?.navLabel || getSectionLabel("contact", detailT),
         type: "contact",
-        heading: getSectionLabel("contact", lang),
+        heading: getSectionLabel("contact", detailT),
         section: contactSection,
       },
     ];
-  }, [contactSection, lang, sections]);
+  }, [contactSection, detailT, sections]);
 
   useEffect(() => {
     if (!railItems.length || typeof window === "undefined") return undefined;
@@ -429,6 +391,22 @@ export default function ProjectDetails() {
       </>
     );
   }
+
+  const contactMessage = getMeaningfulText(contactSection?.data?.message);
+  const contactHeading = contactMessage
+    ? contactMessage
+    : copy.contactTitleTemplate.replace(
+        "{{project}}",
+        project?.name || copy.contactFallbackProject
+      );
+  const contactBody =
+    getMeaningfulText(contactSection?.data?.body) || copy.contactText;
+  const contactEmail =
+    getMeaningfulText(contactSection?.data?.email) ||
+    PROJECT_CONTACT_FALLBACK.email;
+  const contactLink =
+    getMeaningfulText(contactSection?.data?.link) ||
+    PROJECT_CONTACT_FALLBACK.link;
 
   const renderSectionBody = (section, item, sectionNumber) => {
     if (section.type === "gallery") {
@@ -537,7 +515,7 @@ export default function ProjectDetails() {
                     {String(sectionNumber).padStart(2, "0")}
                   </span>
                   <span className={styles.videoTitle}>
-                    {video.title || getSectionHeading(section, lang)}
+                    {video.title || getSectionHeading(section, detailT)}
                   </span>
                 </div>
               </article>
@@ -549,7 +527,11 @@ export default function ProjectDetails() {
 
     if (section.type === "callouts") {
       const items = Array.isArray(section?.data?.items)
-        ? section.data.items
+        ? section.data.items.filter(
+            (callout) =>
+              hasMeaningfulText(callout?.label) ||
+              hasMeaningfulText(callout?.detail)
+          )
         : [];
 
       if (!items.length) {
@@ -618,8 +600,10 @@ export default function ProjectDetails() {
       const mediaUrl = section?.data?.mediaUrl || "";
       const posterUrl = section?.data?.posterUrl || "";
       const overlayLabel =
-        section?.data?.label || item.label || copy.intervalLabel;
-      const overlaySubline = section?.data?.subline || "";
+        getMeaningfulText(section?.data?.label) ||
+        item.label ||
+        copy.intervalLabel;
+      const overlaySubline = getMeaningfulText(section?.data?.subline);
 
       return (
         <div className={styles.intervalFrame}>
@@ -724,7 +708,9 @@ export default function ProjectDetails() {
                       key={item.id}
                       type="button"
                       onClick={() => scrollToSection(item.id)}
-                      aria-current={activeSection === item.id ? "true" : undefined}
+                      aria-current={
+                        activeSection === item.id ? "true" : undefined
+                      }
                       className={`${styles.railLink} ${
                         activeSection === item.id ? styles.railLinkActive : ""
                       }`}
@@ -776,25 +762,20 @@ export default function ProjectDetails() {
                   </span>
                   <span className={styles.sectionLabel}>
                     {contactSection?.navLabel ||
-                      getSectionLabel("contact", lang)}
+                      getSectionLabel("contact", detailT)}
                   </span>
                   <span className={styles.sectionLine} />
                 </header>
-                <h2 className={styles.sectionTitle}>
-                  {contactSection?.data?.message || copy.contactTitle}
-                </h2>
-                <p className={styles.bodyText}>{copy.contactText}</p>
+                <h2 className={styles.sectionTitle}>{contactHeading}</h2>
+                <p className={styles.bodyText}>{contactBody}</p>
                 <div className={styles.contactActions}>
                   <a
-                    href={`mailto:${contactSection?.data?.email || "empaerial.uav@gmail.com"}`}
+                    href={`mailto:${contactEmail}`}
                     className={styles.primaryBtn}
                   >
                     {copy.emailUs}
                   </a>
-                  <a
-                    href={contactSection?.data?.link || "/#contact"}
-                    className={styles.secondaryBtn}
-                  >
+                  <a href={contactLink} className={styles.secondaryBtn}>
                     {copy.contactSection}
                   </a>
                 </div>
