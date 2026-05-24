@@ -1,5 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import {
+  normalizeProjectPayload,
+  normalizeProjectRecord,
+} from "@/Lib/projectData";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -20,7 +24,9 @@ export async function GET() {
     const supabase = getSupabase();
     const { data, error } = await supabase.from("Projects").select("*");
     if (error) throw error;
-    return NextResponse.json(data || []);
+    return NextResponse.json(
+      Array.isArray(data) ? data.map(normalizeProjectRecord) : []
+    );
   } catch (error) {
     console.error("GET error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -31,15 +37,15 @@ export async function POST(request) {
   try {
     const supabase = getSupabase();
     const body = await request.json();
-    const { name, summary, image_url, slug, sections } = body;
+    const payload = normalizeProjectPayload(body);
 
     const { data, error } = await supabase
       .from("Projects")
-      .insert([{ name, summary, image_url, slug, sections }])
+      .insert([payload])
       .select();
 
     if (error) throw error;
-    return NextResponse.json(data[0]);
+    return NextResponse.json(normalizeProjectRecord(data[0]));
   } catch (error) {
     console.error("POST error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -59,13 +65,7 @@ export async function PATCH(request) {
       );
     }
 
-    const updates = {
-      name: body.name,
-      summary: body.summary,
-      image_url: body.image_url,
-      slug: body.slug,
-      sections: body.sections,
-    };
+    const updates = normalizeProjectPayload(body);
 
     const { data, error } = await supabase
       .from("Projects")
@@ -74,7 +74,7 @@ export async function PATCH(request) {
       .select();
 
     if (error) throw error;
-    return NextResponse.json(data[0]);
+    return NextResponse.json(normalizeProjectRecord(data[0]));
   } catch (error) {
     console.error("PATCH error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
