@@ -34,6 +34,17 @@ const sectionTemplates = {
   },
 };
 
+const sectionTypeLabels = {
+  specs: "Specs",
+  materials: "Materials",
+  gallery: "Gallery",
+  callouts: "Callouts",
+  videos: "Videos",
+  text: "Text",
+  "media-interval": "Media Interval",
+  contact: "Contact",
+};
+
 function createEmptyHeroMedia() {
   return {
     type: "image",
@@ -167,6 +178,23 @@ function removeListItem(list, index) {
   return list.filter((_, currentIndex) => currentIndex !== index);
 }
 
+function moveListItem(list, fromIndex, toIndex) {
+  if (
+    fromIndex === toIndex ||
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= list.length ||
+    toIndex >= list.length
+  ) {
+    return list;
+  }
+
+  const copy = [...list];
+  const [movedItem] = copy.splice(fromIndex, 1);
+  copy.splice(toIndex, 0, movedItem);
+  return copy;
+}
+
 function renderMediaPreview(url, type, posterUrl, altText = "") {
   if (!url) return null;
 
@@ -216,6 +244,20 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
 
   const removeSection = (id) => {
     setSections((prev) => prev.filter((section) => section.id !== id));
+  };
+
+  const moveSection = (id, direction) => {
+    setSections((prev) => {
+      const currentIndex = prev.findIndex((section) => section.id === id);
+
+      if (currentIndex === -1) {
+        return prev;
+      }
+
+      const targetIndex =
+        direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      return moveListItem(prev, currentIndex, targetIndex);
+    });
   };
 
   const handleEdit = (item) => {
@@ -386,6 +428,10 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
       <h2 className={styles.sectionTitle}>
         {form.id ? "Edit Project" : "Add New Project"}
       </h2>
+      <p className={styles.rowMetaText}>
+        Manage dossier metadata, curated hero media, rail labels, and cinematic
+        intervals from one editor.
+      </p>
 
       <div className={styles.modeSwitchBar}>
         <button
@@ -431,6 +477,10 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
 
           <div className={styles.builderBox}>
             <h3 className={styles.miniHeader}>Dossier Metadata</h3>
+            <p className={styles.rowMetaText}>
+              These fields feed the atmospheric dossier hero without affecting
+              section order.
+            </p>
             <div className={styles.formLayout}>
               <select
                 value={form.status}
@@ -502,6 +552,10 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
 
           <div className={styles.builderBox}>
             <h3 className={styles.miniHeader}>Hero Media</h3>
+            <p className={styles.rowMetaText}>
+              Choose a dedicated hero asset separate from cover art and body
+              sections.
+            </p>
             <div className={styles.formLayout}>
               <select
                 value={form.hero_media.type}
@@ -644,6 +698,10 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
 
           <div className={styles.builderBox}>
             <h3 className={styles.miniHeader}>Page Builder</h3>
+            <p className={styles.rowMetaText}>
+              Each section can define its own rail label. Use the move controls
+              to keep the current storytelling order intact.
+            </p>
             <div className={styles.actionRow}>
               {[
                 "specs",
@@ -660,17 +718,42 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
                   onClick={() => addSection(type)}
                   className={styles.addSectionBtn}
                 >
-                  + {type.charAt(0).toUpperCase() + type.slice(1)}
+                  + {sectionTypeLabels[type]}
                 </button>
               ))}
             </div>
 
             <div className={styles.formLayout} style={{ marginTop: "1rem" }}>
-              {sections.map((section) => (
+              {sections.map((section, index) => (
                 <div key={section.id} className={styles.sectionEditorBox}>
-                  <h4 className={styles.sectionAccentTitle}>
-                    {section.type.toUpperCase()}
-                  </h4>
+                  <div className={styles.listItem}>
+                    <div>
+                      <h4 className={styles.sectionAccentTitle}>
+                        {sectionTypeLabels[section.type] || section.type}
+                      </h4>
+                      <p className={styles.rowMetaText}>
+                        Section {index + 1} in page order
+                      </p>
+                    </div>
+                    <div className={styles.actionRow}>
+                      <button
+                        type="button"
+                        onClick={() => moveSection(section.id, "up")}
+                        className={styles.editButton}
+                        disabled={index === 0}
+                      >
+                        Move Up
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveSection(section.id, "down")}
+                        className={styles.editButton}
+                        disabled={index === sections.length - 1}
+                      >
+                        Move Down
+                      </button>
+                    </div>
+                  </div>
 
                   <input
                     type="text"
@@ -683,6 +766,9 @@ export default function ProjectEditor({ projects, onProjectsChange }) {
                     }
                     className={styles.inputField}
                   />
+                  <p className={styles.rowMetaText}>
+                    This label appears in the dossier rail navigation.
+                  </p>
 
                   {section.type === "specs" || section.type === "materials" ? (
                     <KVEditor
