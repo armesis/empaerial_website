@@ -4,10 +4,26 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import useProjects from "@/hooks/useProjects";
+import { normalizeProjectRecord } from "@/Lib/projectData";
 import en from "@/translations/en.json";
 import tr from "@/translations/tr.json";
-import useProjects from "@/hooks/useProjects";
 import styles from "./ProjectDetail.module.css";
+
+const STATUS_TRANSLATIONS = {
+  en: {
+    active: "Active",
+    "work in progress": "Work in Progress",
+    completed: "Completed",
+    archived: "Archived",
+  },
+  tr: {
+    active: "Aktif",
+    "work in progress": "Devam Ediyor",
+    completed: "Tamamlandi",
+    archived: "Arsivlendi",
+  },
+};
 
 function parseSections(rawSections) {
   if (Array.isArray(rawSections)) return rawSections;
@@ -24,7 +40,7 @@ function parseSections(rawSections) {
 function normalizeRows(section) {
   if (Array.isArray(section?.data?.rows)) {
     return section.data.rows.map((row) => ({
-      key: row?.key || "—",
+      key: row?.key || "-",
       value: row?.value || "N/A",
     }));
   }
@@ -37,27 +53,6 @@ function normalizeRows(section) {
   }
 
   return [];
-}
-
-function normalizeCallouts(section) {
-  const rawItems = Array.isArray(section?.data?.items)
-    ? section.data.items
-    : [];
-
-  return rawItems
-    .map((item, index) => ({
-      id: item?.id || `${item?.label || "callout"}-${index}`,
-      label: item?.label || `Point ${index + 1}`,
-      detail: item?.detail || "",
-      x: Number(item?.x),
-      y: Number(item?.y),
-    }))
-    .filter((item) => Number.isFinite(item.x) && Number.isFinite(item.y))
-    .map((item) => ({
-      ...item,
-      x: Math.max(4, Math.min(96, item.x)),
-      y: Math.max(6, Math.min(94, item.y)),
-    }));
 }
 
 function normalizeVideos(sections) {
@@ -97,6 +92,47 @@ function getYouTubeEmbedUrl(url) {
   return url;
 }
 
+function getProjectDetailCopy(lang, projectName) {
+  const statusLabels = STATUS_TRANSLATIONS[lang] || STATUS_TRANSLATIONS.en;
+
+  return {
+    back: lang === "tr" ? "Projelere Don" : "Back to Projects",
+    dossier: lang === "tr" ? "Proje Dosyasi" : "Project Dossier",
+    heroEyebrow: lang === "tr" ? "Atmosferik Brifing" : "Atmospheric Briefing",
+    loading: lang === "tr" ? "Proje yukleniyor..." : "Loading project...",
+    notFound: lang === "tr" ? "Proje bulunamadi." : "Project not found.",
+    heroPlaceholder:
+      lang === "tr"
+        ? "Kurgulanmis kahraman medyasi yakinda eklenecek."
+        : "Curated hero media will be added soon.",
+    gallery: lang === "tr" ? "Galeri" : "Gallery",
+    videos: lang === "tr" ? "Videolar" : "Videos",
+    specEmpty:
+      lang === "tr"
+        ? "Teknik ozellikler yakinda eklenecek."
+        : "Specifications will be added soon.",
+    detailFallback:
+      lang === "tr" ? "Detaylar yakinda eklenecek." : "Details coming soon.",
+    contactTitle:
+      lang === "tr"
+        ? `${projectName || "Bu proje"} ile ilgileniyor musunuz?`
+        : `Interested in ${projectName || "this project"}?`,
+    contactText:
+      lang === "tr"
+        ? "Is birlikleri, sponsorluklar veya proje detaylari icin bizimle iletisime gecin."
+        : "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.",
+    reachOut: lang === "tr" ? "Iletisime Gec" : "Reach Out",
+    emailUs: lang === "tr" ? "E-Posta Gonder" : "Email Us",
+    contactSection: lang === "tr" ? "Iletisim Bolumu ->" : "Contact Section ->",
+    metaLabels: {
+      status: lang === "tr" ? "Durum" : "Status",
+      year: lang === "tr" ? "Yil" : "Year",
+      purpose: lang === "tr" ? "Amac" : "Purpose",
+    },
+    statusLabels,
+  };
+}
+
 export default function ProjectDetails() {
   const { slug } = useParams();
   const router = useRouter();
@@ -109,10 +145,10 @@ export default function ProjectDetails() {
     setLang(userLang);
   }, []);
 
-  const project = useMemo(
-    () => projects.find((item) => item.slug === slug),
-    [projects, slug]
-  );
+  const project = useMemo(() => {
+    const matched = projects.find((item) => item.slug === slug);
+    return matched ? normalizeProjectRecord(matched) : null;
+  }, [projects, slug]);
 
   const sections = useMemo(
     () => parseSections(project?.sections),
@@ -141,13 +177,6 @@ export default function ProjectDetails() {
     return normalizeRows(materialSection);
   }, [sections]);
 
-  const callouts = useMemo(() => {
-    const calloutSection = sections.find(
-      (section) => section.type === "callouts"
-    );
-    return normalizeCallouts(calloutSection);
-  }, [sections]);
-
   const textSections = useMemo(
     () => sections.filter((section) => section.type === "text"),
     [sections]
@@ -164,23 +193,51 @@ export default function ProjectDetails() {
     [sections]
   );
 
-  const contactTitle =
-    contactSection?.data?.message ||
-    (lang === "tr"
-      ? `${project?.name || "Bu proje"} ile ilgileniyor musunuz?`
-      : `Interested in ${project?.name || "this project"}?`);
+  const copy = useMemo(
+    () => getProjectDetailCopy(lang, project?.name),
+    [lang, project?.name]
+  );
 
-  const contactText =
-    lang === "tr"
-      ? "Is birlikleri, sponsorluklar veya proje detaylari icin bizimle iletisime gecin."
-      : "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.";
+  const dossierRows = useMemo(
+    () => [
+      {
+        label: copy.metaLabels.status,
+        value: project?.status
+          ? copy.statusLabels[project.status] || project.status
+          : "-",
+      },
+      {
+        label: copy.metaLabels.year,
+        value: project?.year || "-",
+      },
+      {
+        label: copy.metaLabels.purpose,
+        value: project?.purpose || "-",
+      },
+    ],
+    [
+      copy.metaLabels,
+      copy.statusLabels,
+      project?.purpose,
+      project?.status,
+      project?.year,
+    ]
+  );
+
+  const contactTitle = contactSection?.data?.message || copy.contactTitle;
+  const heroMedia = project?.hero_media;
+  const heroAlt = heroMedia?.alt || project?.name || "Project hero";
+  const heroPoster = heroMedia?.poster_url || project?.image_url || "";
+  const heroImage = heroMedia?.url || project?.image_url || "";
+  const hasHeroVideo = heroMedia?.type === "video" && Boolean(heroMedia?.url);
+  const hasHeroImage = heroMedia?.type !== "video" && Boolean(heroImage);
 
   if (loading) {
     return (
       <>
         <Header t={t} lang={lang} setLang={setLang} />
         <main className={styles.pageMain}>
-          <p className={styles.loading}>Loading project...</p>
+          <p className={styles.loading}>{copy.loading}</p>
         </main>
         <Footer t={t} />
       </>
@@ -196,11 +253,11 @@ export default function ProjectDetails() {
             <button
               type="button"
               onClick={() => router.push("/projects")}
-              className={styles.backBtn}
+              className={styles.fallbackBackBtn}
             >
-              Back to Projects
+              {copy.back}
             </button>
-            <p className={styles.loading}>Project not found.</p>
+            <p className={styles.loading}>{copy.notFound}</p>
           </div>
         </main>
         <Footer t={t} />
@@ -214,124 +271,94 @@ export default function ProjectDetails() {
       <main className={styles.pageMain}>
         <section className={styles.pageSection}>
           <div className={styles.inner}>
-            <div className={styles.backRow}>
-              <button
-                type="button"
-                onClick={() => router.push("/projects")}
-                className={styles.backBtn}
-              >
-                Back to Projects
-              </button>
-            </div>
-
             <section className={styles.heroCard}>
-              <div className={styles.heroMedia}>
-                <div className={styles.heroImageFrame}>
-                  {project.image_url ? (
-                    <img
-                      src={project.image_url}
-                      alt={project.name}
-                      className={styles.heroImage}
-                    />
-                  ) : (
-                    <div className={styles.heroPlaceholder}>
-                      Project image coming soon.
-                    </div>
-                  )}
+              <div className={styles.heroMediaShell}>
+                {hasHeroVideo ? (
+                  <video
+                    className={styles.heroMedia}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    poster={heroPoster || undefined}
+                  >
+                    <source src={heroMedia.url} type="video/mp4" />
+                  </video>
+                ) : hasHeroImage ? (
+                  <img
+                    src={heroImage}
+                    alt={heroAlt}
+                    className={styles.heroMedia}
+                  />
+                ) : heroPoster ? (
+                  <img
+                    src={heroPoster}
+                    alt={heroAlt}
+                    className={styles.heroMedia}
+                  />
+                ) : (
+                  <div className={styles.heroPlaceholder}>
+                    {copy.heroPlaceholder}
+                  </div>
+                )}
 
-                  {callouts.map((callout, index) => (
-                    <div
-                      key={callout.id}
-                      className={styles.calloutPin}
-                      style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                    >
-                      <span className={styles.calloutDot}>{index + 1}</span>
-                      <span className={styles.calloutLabel}>
-                        {callout.label}
-                      </span>
-                    </div>
-                  ))}
+                <div className={styles.heroScrim} />
+
+                <div className={styles.heroTopbar}>
+                  <button
+                    type="button"
+                    onClick={() => router.push("/projects")}
+                    className={styles.heroBackBtn}
+                  >
+                    {copy.back}
+                  </button>
+                  <div className={styles.heroEyebrow}>{copy.heroEyebrow}</div>
                 </div>
-              </div>
 
-              <div className={styles.heroContent}>
-                <div className={styles.eyebrow}>Project Detail</div>
-                <h1 className={styles.title}>{project.name}</h1>
-                <p className={styles.summary}>
-                  {project.summary ||
-                    t.vespasian?.subtitle ||
-                    "A modular UAV platform built for testing, iteration, and field performance."}
-                </p>
+                <div className={styles.heroOverlay}>
+                  <div className={styles.heroIntro}>
+                    <div className={styles.dossierTag}>{copy.dossier}</div>
+                    <h1 className={styles.title}>{project.name}</h1>
+                    <p className={styles.summary}>
+                      {project.summary ||
+                        t.vespasian?.subtitle ||
+                        "A modular UAV platform built for testing, iteration, and field performance."}
+                    </p>
+                  </div>
 
-                {specs.length > 0 && (
-                  <div className={styles.quickSpecGrid}>
-                    {specs.slice(0, 4).map((spec, index) => (
-                      <div
-                        key={`${spec.key}-${index}`}
-                        className={styles.quickSpecCard}
-                      >
-                        <span className={styles.quickSpecLabel}>
-                          {spec.key}
-                        </span>
-                        <strong className={styles.quickSpecValue}>
-                          {spec.value}
+                  <div className={styles.dossierPanel}>
+                    {dossierRows.map((row) => (
+                      <div key={row.label} className={styles.dossierRow}>
+                        <span className={styles.dossierLabel}>{row.label}</span>
+                        <strong className={styles.dossierValue}>
+                          {row.value}
                         </strong>
                       </div>
                     ))}
                   </div>
-                )}
-
-                {callouts.length > 0 && (
-                  <div className={styles.calloutPanel}>
-                    <div className={styles.panelTitle}>
-                      Technical Highlights
-                    </div>
-                    <ol className={styles.calloutList}>
-                      {callouts.map((callout, index) => (
-                        <li
-                          key={`${callout.id}-list`}
-                          className={styles.calloutListItem}
-                        >
-                          <span className={styles.calloutIndex}>
-                            {index + 1}
-                          </span>
-                          <div>
-                            <div className={styles.calloutListLabel}>
-                              {callout.label}
-                            </div>
-                            {callout.detail ? (
-                              <p className={styles.calloutListDetail}>
-                                {callout.detail}
-                              </p>
-                            ) : null}
-                          </div>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-
-                <div className={styles.heroActions}>
-                  <a
-                    href={`mailto:${contactSection?.data?.email || "empaerial.uav@gmail.com"}`}
-                    className={styles.primaryBtn}
-                  >
-                    {t.vespasian?.email_us || "Email Us"}
-                  </a>
-                  <a
-                    href={contactSection?.data?.link || "#project-contact"}
-                    className={styles.secondaryBtn}
-                  >
-                    {lang === "tr" ? "Iletisime Gec" : "Reach Out"}
-                  </a>
                 </div>
+              </div>
+
+              <div className={styles.heroActions}>
+                <a
+                  href={`mailto:${contactSection?.data?.email || "empaerial.uav@gmail.com"}`}
+                  className={styles.primaryBtn}
+                >
+                  {copy.emailUs}
+                </a>
+                <a
+                  href={contactSection?.data?.link || "#project-contact"}
+                  className={styles.secondaryBtn}
+                >
+                  {copy.reachOut}
+                </a>
               </div>
             </section>
 
             {galleryImages.length > 1 && (
               <section className={styles.blockCard}>
                 <div className={styles.blockHeader}>
-                  <h2 className={styles.blockTitle}>Gallery</h2>
+                  <h2 className={styles.blockTitle}>{copy.gallery}</h2>
                 </div>
                 <div className={styles.galleryGrid}>
                   {galleryImages.map((src, index) => (
@@ -366,9 +393,7 @@ export default function ProjectDetails() {
                     ))}
                   </div>
                 ) : (
-                  <p className={styles.emptyText}>
-                    Specifications will be added soon.
-                  </p>
+                  <p className={styles.emptyText}>{copy.specEmpty}</p>
                 )}
               </div>
 
@@ -402,7 +427,7 @@ export default function ProjectDetails() {
                   </h2>
                 </div>
                 <p className={styles.bodyText}>
-                  {section?.data?.content || "Details coming soon."}
+                  {section?.data?.content || copy.detailFallback}
                 </p>
               </section>
             ))}
@@ -410,7 +435,7 @@ export default function ProjectDetails() {
             {videos.length > 0 && (
               <section className={styles.blockCard}>
                 <div className={styles.blockHeader}>
-                  <h2 className={styles.blockTitle}>Videos</h2>
+                  <h2 className={styles.blockTitle}>{copy.videos}</h2>
                 </div>
                 <div className={styles.videoGrid}>
                   {videos.map((video) => {
@@ -451,19 +476,19 @@ export default function ProjectDetails() {
               <div className={styles.blockHeader}>
                 <h2 className={styles.blockTitle}>{contactTitle}</h2>
               </div>
-              <p className={styles.bodyText}>{contactText}</p>
-              <div className={styles.heroActions}>
+              <p className={styles.bodyText}>{copy.contactText}</p>
+              <div className={styles.contactActions}>
                 <a
                   href={`mailto:${contactSection?.data?.email || "empaerial.uav@gmail.com"}`}
                   className={styles.primaryBtn}
                 >
-                  {t.vespasian?.email_us || "Email Us"}
+                  {copy.emailUs}
                 </a>
                 <a
                   href={contactSection?.data?.link || "/#contact"}
                   className={styles.secondaryBtn}
                 >
-                  {t.vespasian?.contact_section || "Contact Section ->"}
+                  {copy.contactSection}
                 </a>
               </div>
             </section>
