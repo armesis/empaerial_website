@@ -65,7 +65,10 @@
   color: rgba(255, 255, 255, 0.7);
   padding: 10px 18px;
   background: transparent;
-  transition: border-color var(--dur-micro), color var(--dur-micro), background var(--dur-micro);
+  transition:
+    border-color var(--dur-micro),
+    color var(--dur-micro),
+    background var(--dur-micro);
 }
 
 .tabBtn:hover {
@@ -117,6 +120,17 @@
   color: #000;
   background: #fff;
   border-color: #fff;
+}
+
+.modeSwitchButton:disabled,
+.addSectionBtn:disabled,
+.editButton:disabled,
+.deleteButton:disabled,
+.submitButton:disabled,
+.iconDeleteBtn:disabled,
+.thumbClose:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .formLayout {
@@ -231,6 +245,7 @@
   margin-top: 4px;
   color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
+  line-height: 1.55;
 }
 
 .gridThumbs {
@@ -292,7 +307,9 @@
   padding: 14px;
   text-align: center;
   color: rgba(255, 255, 255, 0.75);
-  transition: border-color var(--dur-micro), background var(--dur-micro);
+  transition:
+    border-color var(--dur-micro),
+    background var(--dur-micro);
 }
 
 .dropZoneActive {
@@ -365,4 +382,3 @@
     align-items: flex-start;
   }
 }
-
