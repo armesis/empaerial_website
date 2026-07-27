@@ -2,6 +2,17 @@
 
 ## Terms
 
+### Project Section
+
+A single typed content block inside a project's `sections` array; the atomic authoring unit of the Project Detail Template's body.
+
+Notes:
+- Canonical types: `specs`, `materials`, `gallery`, `callouts`, `videos`, `text`, `media-interval`, `contact`.
+- `contact` is not an ordinary orderable section — it always renders as the fixed final block (see Atmospheric Prototype Implementation notes).
+- Each section carries an admin-editable `navLabel`, independent of its rendered body heading.
+- No section type currently models a team roster or a structured bill-of-materials table; requests to reproduce those from design references need a new section type, not just a style change.
+_Avoid_: block, module, widget
+
 ### Project Detail Template
 
 The standard page structure used to present any project on the website.
@@ -33,6 +44,8 @@ Notes:
 ### Atmospheric Prototype Implementation
 
 Applying the atmospheric project-detail prototype means changing the visual presentation layer of the project detail page while keeping the existing project content model intact.
+
+**Superseded in part** by Atmospheric Variant C: the notes below about the dossier rail (sticky nav, active-section tracking, mobile compact indicators) described the original prototype pass and no longer match the live page. See Dossier Rail and Atmospheric Variant C.
 
 Notes:
 - The implementation scope is limited to the project detail page route, not the projects listing page.
@@ -75,3 +88,52 @@ Notes:
 - Any new section types introduced for the atmospheric template should be supported in the admin UI in the same implementation pass as the front-end renderer.
 - Section body headings and dossier rail navigation labels may differ.
 - Visual styling weight should be inferred from section type for now rather than controlled by an explicit admin toggle.
+
+### Dossier Rail (retired)
+
+The sticky section-navigation list that used to accompany `/projects/[slug]`, listing every rendered Project Section with an active-section highlight that tracked scroll position.
+
+Notes:
+- Retired as of Atmospheric Variant C, which replaced it with a flat, single-column section flow and no persistent navigation.
+- The underlying `navLabel` field on each Project Section is still stored and admin-editable, but nothing currently renders it.
+_Avoid_: sidebar nav, dossier navigation — both read as still-current under the retired design
+
+### Atmospheric Variant C
+
+The current live visual treatment of the Project Detail Template: a black blueprint-grid background, corner-bracket hero frame, and flat numbered sections (`01 GALLERY`, `02 SPECIFICATIONS`, …) with no persistent section navigation.
+
+Notes:
+- Named after the "C · Atmospheric" option in the design system's `Project Detail - Standalone.html` reference, which also offers unimplemented "A · Dossier" and "B · Editorial" variants.
+- Supersedes the Dossier Rail: no sticky nav, no active-section scroll-tracking, no mobile compact indicators.
+- The hero's curated media renders as a fixed-aspect side panel rather than a full-bleed background image; project metadata renders as an inline stat row rather than a floating dossier card.
+- Individual section "frames" (bordered, rounded cards) from the original prototype were removed in favor of a flat background with a numbered header row per section.
+- The reference mockup also shows a team roster and a structured bill-of-materials table for this variant; neither has a matching Project Section type yet, so neither is implemented on the live page.
+
+### Admin Session
+
+Access to the `/admin` dashboard itself, granted by an ID/password check on `/admin-login` that sets a `sessionStorage` flag.
+
+Notes:
+- Distinct from the Confirmation Password below: reaching the dashboard does not by itself authorize writes or deletes.
+- The `/admin-login` credential check runs client-side against a fixed ID/password pair, not against a server-verified account.
+_Avoid_: login, auth — both too generic to distinguish from the Confirmation Password
+
+### Confirmation Password
+
+A server-side password required on write/delete API calls (projects, blogs, teams), checked against the `ADMIN_PASSWORD` / `ADMIN_DELETE_PASSWORD` env vars, independent of the Admin Session.
+
+Notes:
+- Enforcement is inconsistent across content types as of this writing: teams writes only require it when `ADMIN_PASSWORD` is set in the environment, while projects/blogs deletes always require it but fall back to a hardcoded default password when `ADMIN_DELETE_PASSWORD` is unset.
+_Avoid_: admin password alone — ambiguous with the Admin Session's login password
+
+### Team Member
+
+A person profile shown on the site's team roster, authored through the admin Team Manager.
+
+Notes:
+- Fields: name, age, country, role, skills, fun fact, photo.
+- Unrelated to the Atmospheric Variant C reference mockup's per-project team roster (see Project Section) — this is the site-wide team, not project-scoped.
+
+### Blog Post
+
+A CMS-authored article shown on `/blogs`, with title, slug, and content, authored through the admin Blog Editor.
