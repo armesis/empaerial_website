@@ -113,7 +113,10 @@ function getProjectDetailCopy(detailT) {
     back: detailT?.back || "Back to Projects",
     dossier: detailT?.dossier || "Project Dossier",
     heroEyebrow: detailT?.hero_eyebrow || "Atmospheric Briefing",
-    routeEyebrow: detailT?.route_eyebrow || "Dossier Route",
+    projectsCrumb: detailT?.projects_crumb || "Projects",
+    projectTag: detailT?.project_tag || "Project",
+    exploreCta: detailT?.explore_cta || "Explore Specifications",
+    manufacturerTag: detailT?.manufacturer_tag || "EMPAERIAL UAV",
     loading: detailT?.loading || "Loading project...",
     notFound: detailT?.not_found || "Project not found.",
     heroPlaceholder:
@@ -230,7 +233,6 @@ export default function ProjectDetails() {
   const { slug } = useParams();
   const router = useRouter();
   const [lang, setLang] = useState("en");
-  const [activeSection, setActiveSection] = useState("");
   const t = lang === "tr" ? tr : en;
   const detailT = useMemo(() => getProjectDetailDictionary(t), [t]);
   const { projects, loading } = useProjects();
@@ -243,6 +245,11 @@ export default function ProjectDetails() {
   const project = useMemo(() => {
     const matched = projects.find((item) => item.slug === slug);
     return matched ? normalizeProjectRecord(matched) : null;
+  }, [projects, slug]);
+
+  const projectIndex = useMemo(() => {
+    const position = projects.findIndex((item) => item.slug === slug);
+    return position >= 0 ? position + 1 : 1;
   }, [projects, slug]);
 
   const sections = useMemo(
@@ -316,39 +323,13 @@ export default function ProjectDetails() {
     ];
   }, [contactSection, detailT, sections]);
 
-  useEffect(() => {
-    if (!railItems.length || typeof window === "undefined") return undefined;
-
-    setActiveSection((current) => current || railItems[0].id);
-
-    const elements = railItems
-      .map((item) => document.getElementById(item.id))
-      .filter(Boolean);
-
-    if (!elements.length) return undefined;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort(
-            (left, right) => right.intersectionRatio - left.intersectionRatio
-          );
-
-        if (visibleEntries[0]?.target?.id) {
-          setActiveSection(visibleEntries[0].target.id);
-        }
-      },
-      {
-        rootMargin: "-20% 0px -55% 0px",
-        threshold: [0.15, 0.35, 0.6],
-      }
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, [railItems]);
+  const heroCtaTarget = useMemo(
+    () =>
+      railItems.find((item) => item.type === "specs") ||
+      railItems.find((item) => item.type !== "contact") ||
+      railItems[0],
+    [railItems]
+  );
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -380,7 +361,7 @@ export default function ProjectDetails() {
             <button
               type="button"
               onClick={() => router.push("/projects")}
-              className={styles.heroBackBtn}
+              className={styles.heroCta}
             >
               {copy.back}
             </button>
@@ -440,8 +421,8 @@ export default function ProjectDetails() {
                 className={styles.galleryImage}
               />
               <figcaption className={styles.galleryMeta}>
-                {String(sectionNumber).padStart(2, "0")} /{" "}
-                {String(index + 1).padStart(2, "0")}
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(galleryImages.length).padStart(2, "0")}
               </figcaption>
             </figure>
           ))}
@@ -468,7 +449,13 @@ export default function ProjectDetails() {
               className={styles.dataRow}
             >
               <span className={styles.dataKey}>{row.key}</span>
-              <span className={styles.dataValue}>{row.value}</span>
+              <span
+                className={`${styles.dataValue} ${
+                  row.value.length > 10 ? styles.dataValueCompact : ""
+                }`}
+              >
+                {row.value}
+              </span>
             </div>
           ))}
         </div>
@@ -648,87 +635,114 @@ export default function ProjectDetails() {
     <>
       <Header t={t} lang={lang} setLang={setLang} />
       <main className={styles.pageMain}>
+        <div className={styles.gridOverlay} aria-hidden="true" />
+
+        <div className={styles.crumbBar}>
+          <nav className={styles.crumbNav} aria-label={copy.dossier}>
+            <button
+              type="button"
+              onClick={() => router.push("/projects")}
+              className={styles.crumbLink}
+            >
+              {copy.projectsCrumb}
+            </button>
+            <span className={styles.crumbSep}>/</span>
+            <span className={styles.crumbCur}>{project.name}</span>
+          </nav>
+        </div>
+
         <section className={styles.heroSection}>
-          <div className={styles.heroMediaShell}>
-            {heroImage ? (
-              <AtmosphericMedia
-                type={heroType}
-                src={heroImage}
-                poster={heroPoster}
-                alt={heroAlt}
-                className={styles.heroMedia}
-                copy={copy}
-              />
-            ) : (
-              <div className={styles.heroPlaceholder}>
-                {copy.heroPlaceholder}
+          <div className={styles.heroFrame}>
+            <span
+              className={`${styles.corner} ${styles.cornerTl}`}
+              aria-hidden="true"
+            />
+            <span
+              className={`${styles.corner} ${styles.cornerTr}`}
+              aria-hidden="true"
+            />
+            <span
+              className={`${styles.corner} ${styles.cornerBl}`}
+              aria-hidden="true"
+            />
+            <span
+              className={`${styles.corner} ${styles.cornerBr}`}
+              aria-hidden="true"
+            />
+
+            <div className={styles.heroLeft}>
+              <div className={styles.projTag}>
+                {copy.projectTag} · {String(projectIndex).padStart(2, "0")}
+                <span className={styles.blinkCursor}>_</span>
               </div>
-            )}
-            <div className={styles.heroScrim} />
-            <div className={styles.heroTopbar}>
-              <button
-                type="button"
-                onClick={() => router.push("/projects")}
-                className={styles.heroBackBtn}
-              >
-                {copy.back}
-              </button>
-              <span className={styles.heroEyebrow}>{copy.heroEyebrow}</span>
-            </div>
-            <div className={styles.heroOverlay}>
-              <div className={styles.heroIntro}>
-                <div className={styles.dossierTag}>{copy.dossier}</div>
-                <h1 className={styles.title}>{project.name}</h1>
-                <p className={styles.summary}>
-                  {project.summary ||
-                    t.vespasian?.subtitle ||
-                    "A modular UAV platform built for testing, iteration, and field performance."}
-                </p>
-              </div>
+              <h1 className={styles.title}>{project.name}</h1>
+              <p className={styles.summary}>
+                {project.summary ||
+                  t.vespasian?.subtitle ||
+                  "A modular UAV platform built for testing, iteration, and field performance."}
+              </p>
               <div className={styles.dossierPanel}>
                 {dossierRows.map((row) => (
                   <div key={row.label} className={styles.dossierRow}>
+                    <strong className={styles.dossierValue}>
+                      {row.value}
+                    </strong>
                     <span className={styles.dossierLabel}>{row.label}</span>
-                    <strong className={styles.dossierValue}>{row.value}</strong>
                   </div>
                 ))}
               </div>
+              {heroCtaTarget ? (
+                <button
+                  type="button"
+                  onClick={() => scrollToSection(heroCtaTarget.id)}
+                  className={styles.heroCta}
+                >
+                  {copy.exploreCta} →
+                </button>
+              ) : null}
+            </div>
+
+            <div className={styles.heroRight}>
+              <div className={styles.heroMediaShell}>
+                {heroImage ? (
+                  <AtmosphericMedia
+                    type={heroType}
+                    src={heroImage}
+                    poster={heroPoster}
+                    alt={heroAlt}
+                    className={styles.heroMedia}
+                    copy={copy}
+                  />
+                ) : (
+                  <div className={styles.heroPlaceholder}>
+                    {copy.heroPlaceholder}
+                  </div>
+                )}
+                <span className={styles.scanline} aria-hidden="true" />
+              </div>
+              <span className={`${styles.hudLbl} ${styles.hudLblTr}`}>
+                {project.name} · REV.1
+              </span>
+              <span className={`${styles.hudLbl} ${styles.hudLblBl}`}>
+                {copy.manufacturerTag} ·{" "}
+                {project.year || new Date().getFullYear()}
+              </span>
             </div>
           </div>
         </section>
 
         <section className={styles.contentSection}>
-          <div className={styles.contentGrid}>
-            <aside className={styles.rail}>
-              <div className={styles.railInner}>
-                <span className={styles.railEyebrow}>{copy.routeEyebrow}</span>
-                <nav className={styles.railNav} aria-label={copy.dossier}>
-                  {railItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => scrollToSection(item.id)}
-                      aria-current={
-                        activeSection === item.id ? "true" : undefined
-                      }
-                      className={`${styles.railLink} ${
-                        activeSection === item.id ? styles.railLinkActive : ""
-                      }`}
-                    >
-                      <span className={styles.railIndex}>
-                        {String(item.index + 1).padStart(2, "0")}
-                      </span>
-                      <span className={styles.railLabel}>{item.label}</span>
-                    </button>
-                  ))}
-                </nav>
-              </div>
-            </aside>
+          <div className={styles.sectionColumn}>
+            {railItems
+              .filter((item) => item.type !== "contact")
+              .map((item) => {
+                const showHeading =
+                  item.type === "text" &&
+                  item.heading &&
+                  item.heading.trim().toLowerCase() !==
+                    item.label.trim().toLowerCase();
 
-            <div className={styles.sectionColumn}>
-              {railItems
-                .filter((item) => item.type !== "contact")
-                .map((item) => (
+                return (
                   <section
                     key={item.id}
                     id={item.id}
@@ -742,45 +756,44 @@ export default function ProjectDetails() {
                       <span className={styles.sectionIndex}>
                         {String(item.index + 1).padStart(2, "0")}
                       </span>
-                      <span className={styles.sectionLabel}>{item.label}</span>
+                      <span className={styles.sectionLabel}>
+                        {item.label}
+                      </span>
                       <span className={styles.sectionLine} />
                     </header>
-                    {item.type !== "media-interval" ? (
+                    {showHeading ? (
                       <h2 className={styles.sectionTitle}>{item.heading}</h2>
                     ) : null}
                     {renderSectionBody(item.section, item, item.index + 1)}
                   </section>
-                ))}
+                );
+              })}
 
-              <section
-                id="project-contact"
-                className={`${styles.sectionFrame} ${styles.contactFrame}`}
-              >
-                <header className={styles.sectionHeader}>
-                  <span className={styles.sectionIndex}>
-                    {String(railItems.length).padStart(2, "0")}
-                  </span>
-                  <span className={styles.sectionLabel}>
-                    {contactSection?.navLabel ||
-                      getSectionLabel("contact", detailT)}
-                  </span>
-                  <span className={styles.sectionLine} />
-                </header>
-                <h2 className={styles.sectionTitle}>{contactHeading}</h2>
-                <p className={styles.bodyText}>{contactBody}</p>
-                <div className={styles.contactActions}>
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className={styles.primaryBtn}
-                  >
-                    {copy.emailUs}
-                  </a>
-                  <a href={contactLink} className={styles.secondaryBtn}>
-                    {copy.contactSection}
-                  </a>
-                </div>
-              </section>
-            </div>
+            <section
+              id="project-contact"
+              className={`${styles.sectionFrame} ${styles.contactFrame}`}
+            >
+              <header className={styles.sectionHeader}>
+                <span className={styles.sectionIndex}>
+                  {String(railItems.length).padStart(2, "0")}
+                </span>
+                <span className={styles.sectionLabel}>
+                  {contactSection?.navLabel ||
+                    getSectionLabel("contact", detailT)}
+                </span>
+                <span className={styles.sectionLine} />
+              </header>
+              <h2 className={styles.sectionTitle}>{contactHeading}</h2>
+              <p className={styles.bodyText}>{contactBody}</p>
+              <div className={styles.contactActions}>
+                <a href={`mailto:${contactEmail}`} className={styles.primaryBtn}>
+                  {copy.emailUs}
+                </a>
+                <a href={contactLink} className={styles.secondaryBtn}>
+                  {copy.contactSection}
+                </a>
+              </div>
+            </section>
           </div>
         </section>
       </main>
