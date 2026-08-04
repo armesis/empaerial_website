@@ -1,8 +1,8 @@
 {
-  "nav_home": "Home()",
-  "nav_blogs": "Blogs()",
-  "nav_projects": "Projects()",
-  "nav_contact": "Contact()",
+  "nav_home": "HOME",
+  "nav_blogs": "BLOGS",
+  "nav_projects": "PROJECTS",
+  "nav_contact": "CONTACT",
 
   "hero_title": "EMPAERIAL",
   "hero_subtitle": "Empaerial is a community of international students working on UAVs, sharing knowledge and building innovation together.",
@@ -10,22 +10,30 @@
   "team_title": "Meet Our Team",
   "team_subtitle": "A passionate group of students from around the world — combining creativity, engineering, and collaboration to build the future of UAVs.",
   "projects_title": "Our Projects",
+  "sponsors_eyebrow": "SPONSORS",
   "sponsors_title": "Our Sponsors",
+  "sponsors_note_prefix": "Interested in supporting EMPÆRIAL?",
+  "sponsors_note_link": "Contact us →",
 
-  "contact_title": "Contact() {",
+  "contact_eyebrow": "CONTACT",
+  "contact_heading": "GET IN TOUCH",
+  "contact_title": "GET IN TOUCH",
+  "contact_sub": "Reach out for collaborations, sponsorships, or to join the team.",
   "contact_text": "Send us an email at empaerial.uav@gmail.com or reach us at +90 531 496 69 47.",
   "contact_end": "}",
 
-  "contact_email_label": "Send us an email at:",
+  "contact_email_label": "EMAIL",
+  "contact_email_short_label": "EMAIL",
   "contact_email": "empaerial.uav@gmail.com",
-  "contact_number_label": "or reach us at:",
+  "contact_number_label": "WHATSAPP",
+  "contact_number_short_label": "WHATSAPP",
   "contact_number": "+90 531 496 69 47",
 
   "footer_follow": "Follow us on social media",
   "footer_instagram": "Instagram()",
   "footer_linkedin": "LinkedIn()",
   "footer_youtube": "YouTube()",
-  "footer_copyright": "© 2025 Empaerial. All rights reserved.",
+  "footer_copyright": "© 2026 EMPÆRIAL. All rights reserved.",
 
   "team_members": "Team Members",
   "team_age": "Age:",
@@ -120,54 +128,104 @@
   },
 
   "projects": {
-  "title": "Our Projects",
-  "subtitle": "Here we showcase the drones we are building and those completed, including images, specs, and BOM.",
-  "comingSoon": "Coming Soon",
-  "viewDetails": "View Details",
-  "bom": "BOM",
+    "title": "Our Projects",
+    "subtitle": "Here we showcase the drones we are building and those completed, including images, specs, and BOM.",
+    "comingSoon": "Coming Soon",
+    "viewDetails": "View Details",
+    "bom": "BOM",
+    "vespasian": {
+      "summary": "Lightweight quadcopter prototype for stable flight and durability.",
+      "description": "Vespasian is a lightweight quadcopter prototype featuring carbon fiber arms and 3D printed PLA body components, designed for stability, modularity, and precision performance.",
+      "specs": {
+        "weight": "Weight",
+        "max_takeoff": "Max takeoff weight",
+        "flight_duration": "Flight duration (no load)",
+        "frame_length": "Frame length",
+        "height": "Height",
+        "motors": "Motors",
+        "firmware": "Firmware"
+      },
+      "bom": {
+        "arms": "Arms",
+        "motor_mounts": "Motor mounts",
+        "arm_to_chassis": "Arm to Chassis connection",
+        "chassis": "Chassis",
+        "escs": "ESCs",
+        "motors": "Motors",
+        "battery": "Battery",
+        "props": "Props",
+        "controller": "Flight Controller",
+        "firmware": "Firmware"
+      }
+    },
+    "drone2": { "summary": "Coming Soon" },
+    "drone3": { "summary": "Coming Soon" },
+    "drone4": { "summary": "Coming Soon" }
+  },
   "vespasian": {
-    "summary": "Lightweight quadcopter prototype for stable flight and durability.",
-    "description": "Vespasian is a lightweight quadcopter prototype featuring carbon fiber arms and 3D printed PLA body components, designed for stability, modularity, and precision performance.",
+    "subtitle": "A modular, lightweight quadcopter engineered for precision and endurance.",
+    "specifications": "Specifications",
     "specs": {
       "weight": "Weight",
-      "max_takeoff": "Max takeoff weight",
-      "flight_duration": "Flight duration (no load)",
-      "frame_length": "Frame length",
+      "max_takeoff": "Max Takeoff Weight",
+      "flight_duration": "Flight Duration",
+      "frame_length": "Frame Length",
       "height": "Height"
     },
-    "bom": {
-      "arms": "Arms",
-      "motor_mounts": "Motor mounts",
-      "arm_to_chassis": "Arm to Chassis connection",
-      "chassis": "Chassis",
-      "escs": "ESCs",
-      "motors": "Motors",
-      "battery": "Battery",
-      "props": "Props",
-      "controller": "Flight Controller",
-      "firmware": "Firmware"
+    "materials": "Materials",
+    "about": "About the Project",
+    "about_text": "Details on this project will be uploaded soon.",
+    "contact_title": "Interested in Vespasian?",
+    "contact_text": "For collaborations, sponsorships, or limited-batch availability, reach out to us.",
+    "email_us": "Email Us",
+    "contact_section": "Contact Section →"
+  },
+  "project_detail": {
+    "back": "Back to Projects",
+    "dossier": "Project Dossier",
+    "hero_eyebrow": "Atmospheric Briefing",
+    "route_eyebrow": "Dossier Route",
+    "projects_crumb": "Projects",
+    "project_tag": "Project",
+    "explore_cta": "Explore Specifications",
+    "manufacturer_tag": "EMPAERIAL UAV",
+    "loading": "Loading project...",
+    "not_found": "Project not found.",
+    "hero_placeholder": "Curated opening media pending.",
+    "autoplay_fallback": "Autoplay was blocked. Playback controls remain available.",
+    "gallery_empty": "Visual dossier pending.",
+    "specs_empty": "Telemetry pending.",
+    "materials_empty": "Material register pending.",
+    "text_empty": "Narrative notes pending.",
+    "videos_empty": "Video dossier pending.",
+    "callouts_empty": "Annotation pass pending.",
+    "interval_empty": "Transition media pending.",
+    "contact_title_template": "Interested in {{project}}?",
+    "contact_fallback_project": "this project",
+    "contact_text": "Reach out for collaborations, sponsorships, or a deeper technical conversation about the build.",
+    "email_us": "Email Us",
+    "contact_section": "Contact Section",
+    "interval_label": "Interval",
+    "meta_labels": {
+      "status": "Status",
+      "year": "Year",
+      "purpose": "Purpose"
+    },
+    "status_labels": {
+      "active": "Active",
+      "work in progress": "Work in Progress",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "section_labels": {
+      "specs": "Specifications",
+      "materials": "Materials",
+      "gallery": "Gallery",
+      "callouts": "Callouts",
+      "videos": "Videos",
+      "text": "Overview",
+      "media-interval": "Transition",
+      "contact": "Contact"
     }
-  },
-  "drone2": { "summary": "Coming Soon" },
-  "drone3": { "summary": "Coming Soon" },
-  "drone4": { "summary": "Coming Soon" }
-},
-"vespasian": {
-  "subtitle": "A modular, lightweight quadcopter engineered for precision and endurance.",
-  "specifications": "Specifications",
-  "specs": {
-    "weight": "Weight",
-    "max_takeoff": "Max Takeoff Weight",
-    "flight_duration": "Flight Duration",
-    "frame_length": "Frame Length",
-    "height": "Height"
-  },
-  "materials": "Materials",
-  "about": "About the Project",
-  "about_text": "Details on this project will be uploaded soon.",
-  "contact_title": "Interested in Vespasian?",
-  "contact_text": "For collaborations, sponsorships, or limited-batch availability, reach out to us.",
-  "email_us": "Email Us",
-  "contact_section": "Contact Section →"
-}
+  }
 }
