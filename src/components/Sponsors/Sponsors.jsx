@@ -10,6 +10,11 @@ export default function Sponsors({ t }) {
       name: "Batu Elektrik",
       link: "https://batuelektroteknik.com.tr/",
     },
+    {
+      src: "/images/kocaeli.png",
+      name: "Kocaeli Büyükşehir Belediyesi",
+      link: "https://www.kocaeli.bel.tr/",
+    },
   ];
 
   const silverSponsors = [
