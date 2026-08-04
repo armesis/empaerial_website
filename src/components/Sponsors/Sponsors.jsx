@@ -5,7 +5,30 @@ import WingCut from "@/components/WingCut/WingCut";
 import styles from "./Sponsors.module.css";
 
 export default function Sponsors({ t }) {
-  const placeholders = [0, 1, 2];
+  const goldSponsors = [
+    {
+      src: "/images/batu.png",
+      name: "Batu Elektrik",
+      link: "https://batuelektroteknik.com.tr/",
+    },
+    {
+      src: "/images/kilavuz.png",
+      name: "KILAVUZ TEKNOLOJİ MERKEZİ",
+      link: "https://kilavuzgenclik.kocaeli.bel.tr/TeknolojiMerkezi",
+    },
+  ];
+
+  const silverSponsors = [
+    { src: "/images/silver1.png", name: "Silver Sponsor 1", link: "#" },
+    { src: "/images/silver2.png", name: "Silver Sponsor 2", link: "#" },
+    { src: "/images/silver3.png", name: "Silver Sponsor 3", link: "#" },
+  ];
+
+  const bronzeSponsors = [
+    { src: "/images/bronze1.png", name: "Bronze Sponsor 1", link: "#" },
+    { src: "/images/bronze2.png", name: "Bronze Sponsor 2", link: "#" },
+    { src: "/images/bronze3.png", name: "Bronze Sponsor 3", link: "#" },
+  ];
 
   return (
     <section className={styles.sponsorsSection} id="sponsors" aria-labelledby="sponsors-title">
